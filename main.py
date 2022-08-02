@@ -5,13 +5,21 @@ from fastapi import Body, Query, Path
 
 app = FastAPI()
 
-#Models
+# Models
+
+
 class Person(BaseModel):
     first_name: str
     last_name: str
     age: int
     hair_color: Optional[str] = None
     is_marriend: Optional[bool] = None
+
+
+class Location(BaseModel):
+    city: str
+    state: str
+    country: str
 
 @app.get("/")
 def home():
@@ -23,7 +31,8 @@ def home():
 def create_person(person: Person = Body(...)):
     return person
 
-#Validaciones Query parameters
+# Validaciones Query parameters
+
 
 @app.get("/person/details")
 def show_person(
@@ -42,7 +51,7 @@ def show_person(
 ):
     return {name: age}
 
-#Validaciones: Path parameters
+# Validaciones: Path parameters
 
 
 @app.get("/person/details/{person_id}")
@@ -53,4 +62,26 @@ def show_person(
         )
 ):
     return {person_id: "It exist"}
+
+# Validaciones: Reqeuest body
+
+
+@app.put("/person/{person_id}")
+def update_person(
+        person_id: int = Path(
+            ...,
+            title="Person ID",
+            description="This is the person ID",
+            gt=0
+        ),
+        person: Person = Body(...),
+        location: Location = Body(...)
+):
+    result = person.dict()
+    result.update(location.dict())
+    return result
+
+
+
+
 
