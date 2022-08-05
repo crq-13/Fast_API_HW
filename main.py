@@ -2,7 +2,7 @@ from typing import Optional
 from enum import Enum
 from pydantic import BaseModel, Field
 from fastapi import FastAPI
-from fastapi import Body, Query, Path
+from fastapi import Body, Query, Path, status
 
 app = FastAPI()
 
@@ -70,14 +70,18 @@ class Location(BaseModel):
     country: str
 
 
-@app.get("/")
+@app.get("/", status_code=status.HTTP_200_OK)
 def home():
     return {"Hello": "world"}
 
 
 # Request and response body
 
-@app.post("/person/new", response_model=PersonOut)
+@app.post(
+    path="/person/new",
+    response_model=PersonOut,
+    status_code=status.HTTP_201_CREATED
+    )
 def create_person(person: Person = Body(...)):
     return person
 
@@ -85,7 +89,10 @@ def create_person(person: Person = Body(...)):
 # Validaciones Query parameters
 
 
-@app.get("/person/details")
+@app.get(
+    path="/person/details",
+    status_code=status.HTTP_200_OK
+    )
 def show_person(
         name: Optional[str] = Query(
             None,
