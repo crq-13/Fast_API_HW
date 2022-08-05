@@ -2,7 +2,7 @@ from typing import Optional
 from enum import Enum
 from pydantic import BaseModel, Field
 from fastapi import FastAPI
-from fastapi import Body, Query, Path, status
+from fastapi import Body, Query, Path, status, Form
 
 app = FastAPI()
 
@@ -68,6 +68,12 @@ class Location(BaseModel):
     city: str
     state: str
     country: str
+
+
+class LoginOut(BaseModel):
+    username: str = Field(..., max_length=20, example="crq13")
+    message: str = Field(default="Succesfull")
+
 
 
 @app.get("/", status_code=status.HTTP_200_OK)
@@ -144,3 +150,13 @@ def update_person(
     # result = person.dict()
     # result.update(location.dict())
     return person
+
+
+@app.post(
+    path="/login",
+    response_model=LoginOut,
+    status_code=status.HTTP_200_OK
+)
+def login(username: str = Form(...), password: str = Form(...)):
+    return LoginOut(username)
+
