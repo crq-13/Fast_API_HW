@@ -6,6 +6,7 @@ from fastapi import Body, Query, Path
 
 app = FastAPI()
 
+
 # Models
 
 
@@ -17,8 +18,7 @@ class HairColor(Enum):
     red = "red"
 
 
-
-class Person(BaseModel):
+class PersonBase(BaseModel):
     first_name: str = Field(
         ...,
         min_length=1,
@@ -39,6 +39,9 @@ class Person(BaseModel):
     )
     hair_color: Optional[HairColor] = Field(default=None, example="brown")
     is_marriend: Optional[bool] = Field(default=None, example=False)
+
+
+class Person(PersonBase):
     password: str = Field(
         ...,
         min_length=8,
@@ -56,27 +59,9 @@ class Person(BaseModel):
     #         }
     #     }
 
-class PersonOut(BaseModel):
-    first_name: str = Field(
-        ...,
-        min_length=1,
-        max_length=50,
-        example="Cristian"
-    )
-    last_name: str = Field(
-        ...,
-        min_length=1,
-        max_length=50,
-        example="Rojas"
-    )
-    age: int = Field(
-        ...,
-        gt=0,
-        le=115,
-        example=28
-    )
-    hair_color: Optional[HairColor] = Field(default=None, example="brown")
-    is_marriend: Optional[bool] = Field(default=None, example=False)
+
+class PersonOut(PersonBase):
+    pass
 
 
 class Location(BaseModel):
@@ -84,9 +69,11 @@ class Location(BaseModel):
     state: str
     country: str
 
+
 @app.get("/")
 def home():
     return {"Hello": "world"}
+
 
 # Request and response body
 
@@ -94,27 +81,30 @@ def home():
 def create_person(person: Person = Body(...)):
     return person
 
+
 # Validaciones Query parameters
 
 
 @app.get("/person/details")
 def show_person(
-    name: Optional[str] = Query(
-        None,
-        min_length=1,
-        max_length=50,
-        title="Person Name",
-        description="This is the person name. It's between 1 and 50 characters",
-        example="Laura"
+        name: Optional[str] = Query(
+            None,
+            min_length=1,
+            max_length=50,
+            title="Person Name",
+            description="This is the person name. It's between 1 and 50 characters",
+            example="Laura"
         ),
-    age: str = Query(
-        ...,
-        title="Person age",
-        description="This is the person age. It's required",
-        example="28"
-    )
+        age: str = Query(
+            ...,
+            title="Person age",
+            description="This is the person age. It's required",
+            example="28"
+        )
 ):
+
     return {name: age}
+
 
 # Validaciones: Path parameters
 
@@ -129,6 +119,7 @@ def show_person(
 ):
     return {person_id: "It exist"}
 
+
 # Validaciones: Reqeuest body
 
 
@@ -141,13 +132,8 @@ def update_person(
             gt=0
         ),
         person: Person = Body(...),
-        #location: Location = Body(...)
+        # location: Location = Body(...)
 ):
-    #result = person.dict()
-    #result.update(location.dict())
+    # result = person.dict()
+    # result.update(location.dict())
     return person
-
-
-
-
-
