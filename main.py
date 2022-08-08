@@ -89,7 +89,7 @@ def home():
     response_model=PersonOut,
     status_code=status.HTTP_201_CREATED,
     tags=["Persons"],
-    summary= "Create a person in the app"
+    summary="Create a person in the app"
     )
 def create_person(person: Person = Body(...)):
     """
@@ -140,7 +140,9 @@ def show_person(
 persons = [1, 2, 3, 4, 5]
 
 @app.get("/person/details/{person_id}",
-    tags=["Persons"])
+    tags=["Persons"],
+         deprecated=True
+         )
 def show_person(
         person_id: int = Path(
             ...,
